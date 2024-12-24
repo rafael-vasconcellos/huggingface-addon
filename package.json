@@ -1,7 +1,7 @@
 {
-  "name": "gemini-addon",
-  "title": "Gemini",
-  "description": "Google's gemini support for Translator++.",
+  "name": "c4ai-addon",
+  "title": "Cohere for AI",
+  "description": "Cohere for AI support for Translator++.",
   "author": "",
   "version": "1.0.0",
   "main": "main.js",

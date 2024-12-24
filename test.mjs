@@ -11,7 +11,7 @@ const models = {
     "Command-R+": "Nymbo/c4ai-command-r-plus",
 }
 
-export class HugSpacesChat { 
+class HugSpacesChat { 
     constructor(model_name) { 
         if (model_name) { 
             this.model_name = model_name 

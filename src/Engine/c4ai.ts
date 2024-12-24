@@ -1,6 +1,7 @@
-import { Client } from "@gradio/client";
+import { Client as IClient } from '@gradio/client';
 import { ICustomEngineModule } from './custom';
 import { IPromptModule } from './Prompt';
+const { Client } = require("www/addons/c4ai/lib/@gradio/client") as typeof import('@gradio/client');
 const { CustomEngine, TranslationFailException } = require("www/addons/c4ai/Engine/custom.js") as ICustomEngineModule;
 const { systemPrompt, userPrompt, parseResponse } = require("www/addons/c4ai/Engine/Prompt.js") as IPromptModule;
 
@@ -29,8 +30,8 @@ interface IHugSpacesChat {
     connect(model_name?: string): void
 }
 
-export class HugSpacesChat implements IHugSpacesChat { 
-    private clientReq?: Promise<Client | null>
+class HugSpacesChat implements IHugSpacesChat { 
+    private clientReq?: Promise<IClient | null>
     readonly model_name?: string
 
     constructor(model_name?: string) { 
@@ -79,6 +80,7 @@ export class HugSpacesChat implements IHugSpacesChat {
 
 class EngineClient extends CustomEngine { 
     get model_name(): string { return this.getEngine()?.getOptions('model_name') ?? "Command-R-Plus-08-2024" }
+    get api_key(): string | null { return "Placeholder" }
     private hugSpacesChat = new HugSpacesChat()
 
     constructor(thisAddon: Addon) { 
@@ -132,10 +134,15 @@ class EngineClient extends CustomEngine {
 
     public async fetcher(texts: string[]) { 
         this.hugSpacesChat.connect(this.model_name)
-        const response = (await this.hugSpacesChat.sendPrompt(texts))?.data?.[0 as never] as unknown as string ?? ""
+        const response_data = (await this.hugSpacesChat.sendPrompt(texts)
+        .catch(e => { throw new TranslationFailException({
+                message: "Error while fetching.",
+                status: 529
+        })}))?.data
+        const response = response_data?.[0 as never] ?? JSON.stringify(response_data)
         const result = await parseResponse(response) 
         if (result.length!==texts.length) { 
-            const message = result.length===0? "Failed to parse: " + response : 'Unexpected error!'
+            const message = result.length===0? "Failed to parse: " + response_data : 'Unexpected error!'
             throw new TranslationFailException({
                 message,
                 status: 200
