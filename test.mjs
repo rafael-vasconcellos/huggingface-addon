@@ -1,4 +1,6 @@
 import { Client } from "@gradio/client";
+import pkg from "./dist/c4ai/Engine/Prompt.js";
+const { systemPrompt, userPrompt } = pkg
 
 
 const models = { 
@@ -45,7 +47,7 @@ class HugSpacesChat {
         if (client) { 
             return await client.predict("/chat", { 		
                 message: text, 
-                //system_message: systemPrompt, 
+                system_message: "Be as fast as possible.", 
                 //max_tokens: 1, 
                 temperature: 0,
                 top_p: 0.1, 
@@ -56,7 +58,10 @@ class HugSpacesChat {
 }
 
 
+const testPrompt = []
+
 const hugSpacesChat = new HugSpacesChat("Command-R-Plus-08-2024")
-hugSpacesChat.testPrompt("Good evening.").then(response => { 
+hugSpacesChat.testPrompt("Good Evening.").then(response => { 
     console.log(response?.data)
-})
+}).catch( e => console.log(JSON.stringify(e)) )
+
