@@ -24,17 +24,20 @@ class HugSpacesChat {
     connect(model_name) { 
         model_name = model_name ?? this.model_name
         if (!model_name) { return null }
-        else if (!models[model_name]) { return alert('Invalid model!') }
-        this.clientReq = Client.connect(models[model_name])
-        .catch(() => null)
+        else if (!models[model_name]) { alert('Invalid model!') }
+        else if (model_name !== this.model_name || !this.clientReq) { 
+            if (model_name !== this.model_name) { this.model_name = model_name }
+            this.clientReq = Client.connect(models[model_name])
+            .catch(() => null)
+        }
     }
 
-    async sendPrompt(text) { 
+    async sendPrompt(text, target_language) { 
         const client = await this.clientReq
         if (client) { 
             return await client.predict("/chat", { 		
                 message: userPrompt(text), 
-                system_message: systemPrompt, 
+                system_message: systemPrompt(target_language), 
                 //max_tokens: 1, 
                 temperature: 0,
                 top_p: 0.1, 
@@ -42,7 +45,7 @@ class HugSpacesChat {
         }
     }
 
-    async testPrompt(text) { 
+    async testPrompt(text, _) { 
         const client = await this.clientReq
         if (client) { 
             return await client.predict("/chat", { 		
@@ -61,7 +64,7 @@ class HugSpacesChat {
 const testPrompt = []
 
 const hugSpacesChat = new HugSpacesChat("Command-R-Plus-08-2024")
-hugSpacesChat.testPrompt("Good Evening.").then(response => { 
+hugSpacesChat.testPrompt("Good Evening.", "English - US").then(response => { 
     console.log(response?.data)
 }).catch( e => console.log(JSON.stringify(e)) )
 

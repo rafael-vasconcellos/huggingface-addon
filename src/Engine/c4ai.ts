@@ -24,15 +24,9 @@ const models = {
 
 
 
-interface IHugSpacesChat { 
-    model_name?: string
-    sendPrompt(text: string[]): Promise<unknown>
-    connect(model_name?: string): void
-}
-
-class HugSpacesChat implements IHugSpacesChat { 
+class HugSpacesChat { 
     private clientReq?: Promise<IClient | null>
-    readonly model_name?: string
+    private model_name?: string
 
     constructor(model_name?: string) { 
         if (model_name) { 
@@ -44,17 +38,20 @@ class HugSpacesChat implements IHugSpacesChat {
     connect(model_name?: string) { 
         model_name = model_name ?? this.model_name
         if (!model_name) { return null }
-        else if (!models[model_name as never]) { return alert('Invalid model!') }
-        this.clientReq = Client.connect(models[model_name as never])
-        .catch(() => null)
+        else if (!models[model_name as never]) { alert('Invalid model!') }
+        else if (model_name !== this.model_name || !this.clientReq) { 
+            if (model_name !== this.model_name) { this.model_name = model_name }
+            this.clientReq = Client.connect(models[model_name as never])
+            .catch(() => null)
+        }
     }
 
-    async sendPrompt(text: string[]) { 
+    async sendPrompt(text: string[], target_language: string) { 
         const client = await this.clientReq
         if (client) { 
             return await client.predict("/chat", { 		
                 message: userPrompt(text), 
-                system_message: systemPrompt, 
+                system_message: systemPrompt(target_language), 
                 //max_tokens: 1, 
                 temperature: 0,
                 top_p: 0.1, 
@@ -62,12 +59,12 @@ class HugSpacesChat implements IHugSpacesChat {
         }
     }
 
-    async testPrompt(text: string) { 
+    async testPrompt(text: string, _: string) { 
         const client = await this.clientReq
         if (client) { 
             return await client.predict("/chat", { 		
                 message: text, 
-                //system_message: systemPrompt, 
+                system_message: "Be as fast as possible.", 
                 //max_tokens: 1, 
                 temperature: 0,
                 top_p: 0.1, 
@@ -134,7 +131,7 @@ class EngineClient extends CustomEngine {
 
     public async fetcher(texts: string[]) { 
         this.hugSpacesChat.connect(this.model_name)
-        const response_data = (await this.hugSpacesChat.sendPrompt(texts)
+        const response_data = (await this.hugSpacesChat.sendPrompt(texts, this.target_language)
         .catch(e => { throw new TranslationFailException({
                 message: "Error while fetching.",
                 status: 529
@@ -142,7 +139,9 @@ class EngineClient extends CustomEngine {
         const response = response_data?.[0 as never] ?? JSON.stringify(response_data)
         const result = await parseResponse(response) 
         if (result.length!==texts.length) { 
-            const message = result.length===0? "Failed to parse: " + response_data : 'Unexpected error!'
+            const message = result.length === 0? 
+				"Failed to parse: " + response 
+				: `Unexpected error: length ${result.length} out of ${texts.length}.` + '\n\n' + response;
             throw new TranslationFailException({
                 message,
                 status: 200
