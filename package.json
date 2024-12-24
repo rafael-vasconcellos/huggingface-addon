@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@gradio/client": "^1.8.0",
     "jsonrepair": "^3.10.0"
   }
 }
