@@ -23,9 +23,9 @@ esbuild.build({
   //splitting: true, 
 }).then(() => {
     const package_src = path.resolve('./package.json');
-    const package_dest = path.resolve('./dist/gemini/package.json');
+    const package_dest = path.resolve('./dist/c4ai/package.json');
     const icon_src = path.resolve('./icon.png');
-    const icon_dest = path.resolve('./dist/gemini/icon.png');
+    const icon_dest = path.resolve('./dist/c4ai/icon.png');
     fs.copyFile(package_src, package_dest)
     fs.copyFile(icon_src, icon_dest)
 });
