@@ -14,7 +14,7 @@ esbuild.build({
   bundle: true,
   minify: false,  // mantém o código legível
   format: 'cjs', 
-  outdir: './dist/c4ai/lib',
+  outdir: './dist/hugging-spaces/lib',
   keepNames: true, // preserva nomes de variáveis/funções
   platform: 'node', 
   external: ['fsevents', 'node:*'], // Evita que o esbuild tente resolver alguns imports problemáticos
@@ -23,9 +23,9 @@ esbuild.build({
   //splitting: true, 
 }).then(() => {
     const package_src = path.resolve('./package.json');
-    const package_dest = path.resolve('./dist/c4ai/package.json');
+    const package_dest = path.resolve('./dist/hugging-spaces/package.json');
     const icon_src = path.resolve('./icon.png');
-    const icon_dest = path.resolve('./dist/c4ai/icon.png');
+    const icon_dest = path.resolve('./dist/hugging-spaces/icon.png');
     fs.copyFile(package_src, package_dest)
     fs.copyFile(icon_src, icon_dest)
 });

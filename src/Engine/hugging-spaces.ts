@@ -1,9 +1,9 @@
 import { Client as IClient } from '@gradio/client';
 import { ICustomEngineModule } from './custom';
 import { IPromptModule } from './Prompt';
-const { Client } = require("www/addons/c4ai/lib/@gradio/client") as typeof import('@gradio/client');
-const { CustomEngine, TranslationFailException } = require("www/addons/c4ai/Engine/custom.js") as ICustomEngineModule;
-const { systemPrompt, userPrompt, parseResponse } = require("www/addons/c4ai/Engine/Prompt.js") as IPromptModule;
+const { Client } = require("www/addons/hugging-spaces/lib/@gradio/client") as typeof import('@gradio/client');
+const { CustomEngine, TranslationFailException } = require("www/addons/hugging-spaces/Engine/custom.js") as ICustomEngineModule;
+const { systemPrompt, userPrompt, parseResponse } = require("www/addons/hugging-spaces/Engine/Prompt.js") as IPromptModule;
 
 
 const models = { 
@@ -105,7 +105,7 @@ class EngineClient extends CustomEngine {
                         description: "Choose the model",
                         required: false,
                         default: "Command-R-Plus-08-2024",
-                        enum: ["Command-R-Plus-08-2024", "Command-R+", ]
+                        enum: ["Command-R-Plus-08-2024", "Command-R+", "Qwen-2.5-72B-Instruct"]
                     }
                 },
 

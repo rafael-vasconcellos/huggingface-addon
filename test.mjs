@@ -1,5 +1,5 @@
 import { Client } from "@gradio/client";
-import pkg from "./dist/c4ai/Engine/Prompt.js";
+import pkg from "./dist/hugging-spaces/Engine/Prompt.js";
 const { systemPrompt, userPrompt } = pkg
 
 
