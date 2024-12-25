@@ -2,9 +2,10 @@
   "name": "c4ai-addon",
   "title": "Cohere for AI",
   "description": "Cohere for AI support for Translator++.",
-  "author": "",
+  "author": "github.com/rafael-vasconcellos",
   "version": "1.0.0",
   "main": "main.js",
+  "icon": "icon.png",
   "autoload": false,
   "load": [
     "main.js"
