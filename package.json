@@ -11,7 +11,7 @@
     "main.js"
   ],
   "scripts": {
-    "build": "tsc && node esbuild.config.mjs",
+    "build": "tsc && node esbuild.config.mjs && tsc-alias",
     "declare": "tsc ./src/Engine/custom.ts --declaration --emitDeclarationOnly",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,7 +19,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.9.1",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.1",
+    "tsc-alias": "^1.8.11",
     "typescript": "^5.6.3"
   },
   "dependencies": {
