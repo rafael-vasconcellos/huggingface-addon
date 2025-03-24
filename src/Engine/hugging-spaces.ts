@@ -1,9 +1,9 @@
 import { Client as IClient } from '@gradio/client';
 import { ICustomEngineModule } from './custom';
 import { IPromptModule } from './Prompt';
-const { Client } = require("www/addons/hugging-spaces/lib/@gradio/client") as typeof import('@gradio/client');
-const { CustomEngine, TranslationFailException } = require("www/addons/hugging-spaces/Engine/custom.js") as ICustomEngineModule;
-const { systemPrompt, userPrompt, parseResponse } = require("www/addons/hugging-spaces/Engine/Prompt.js") as IPromptModule;
+const { Client } = require("@gradio/client") as typeof import('@gradio/client');
+const { CustomEngine, TranslationFailException } = require("./custom") as ICustomEngineModule;
+const { systemPrompt, userPrompt, parseResponse } = require("./Prompt") as IPromptModule;
 
 
 const models = { 

@@ -1,4 +1,4 @@
-const { jsonrepair } = require("www/addons/hugging-spaces/lib/jsonrepair.js") as typeof import('jsonrepair')
+const { jsonrepair } = require("jsonrepair") as typeof import('jsonrepair')
 
 
 const systemPrompt = (targetLanguage: string) => `
