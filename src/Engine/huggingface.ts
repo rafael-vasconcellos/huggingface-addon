@@ -1,11 +1,11 @@
 import { ICustomEngineModule } from './Custom';
 import { IPromptModule } from './Prompt';
 import { SpacesModule, SpacesModels } from './hugging-spaces';
-import { HuggingFaceInferenceModule } from './hf-inference';
+import { HuggingFaceInferenceModule, InferenceModels } from './hf-inference';
 const { CustomEngine, TranslationFailException } = require("./Custom") as ICustomEngineModule;
 const { parseResponse } = require("./Prompt") as IPromptModule;
-const { HugSpacesChat } = require("./hugging-spaces") as SpacesModule;
-const { InferenceClient } = require('./hf-inference') as HuggingFaceInferenceModule
+const { HugSpacesChat, MissingSpaceAPIKeyException } = require("./hugging-spaces") as SpacesModule;
+const { InferenceClient, MissingInferenceAPIKeyException } = require('./hf-inference') as HuggingFaceInferenceModule
 
 
 
@@ -19,7 +19,7 @@ class HuggingFaceClient {
     private hugSpacesChat: InstanceType<typeof HugSpacesChat>
     constructor({ inference_key, spaces_key }: HuggingFaceClientInit) { 
         this.inferenceClient = new InferenceClient(inference_key)
-        this.hugSpacesChat = new HugSpacesChat({ api_key: spaces_key })
+        this.hugSpacesChat = new HugSpacesChat({ apiKey: spaces_key })
     }
 
     private async sendPrompt(texts: string[], model: string, target_language: string) { 
@@ -38,12 +38,6 @@ class HuggingFaceClient {
 
     public async generate(texts: string[], model: string, target_language: string = "English - US") { 
         const response = await this.sendPrompt(texts, model, target_language)
-        .catch(e => { 
-            throw new TranslationFailException({
-                message: "Error while fetching.",
-                status: 529
-            })
-        })
         const result = await parseResponse(response) 
         if (result.length!==texts.length) { 
             const message = result.length === 0? 
@@ -83,7 +77,7 @@ class EngineClient extends CustomEngine {
                         description: "Choose the model",
                         required: false,
                         default: "Command-R-Plus-08-2024",
-                        enum: Object.keys(HugSpacesChat.spacesModels)
+                        enum: [...Object.keys(HugSpacesChat.spacesModels), ...Object.keys(InferenceClient.inferenceModels)]
                     },
                     api_key: { 
                         type: "string",
@@ -120,14 +114,14 @@ class EngineClient extends CustomEngine {
                         key: "target_language"
                     }, 
                 ],
-                onChange: (_: HTMLInputElement, key: string, value: unknown) => { 
-                    if (key === "api_key") { 
-                        const spacesModels = Object.keys(HugSpacesChat.spacesModels)
-                        const inferenceModels = Object.keys(InferenceClient.inferenceModels)
-                        if (value) { this.optionsForm.schema.model_name.enum = [...spacesModels, ...inferenceModels] }
-                        else { this.optionsForm.schema.model_name.enum = spacesModels }
-                    }
+                onChange: (_: HTMLInputElement, key: string, value: any) => { 
                     this.update(key, value);
+                    if (key === "model_name" && InferenceClient.inferenceModels[value as InferenceModels] && !this.api_key) { 
+                        alert("This model requires an Inference API key!")
+                    }
+                    if (key === "model_name" && HugSpacesChat.isRestricted(value) && !this.spaces_key) { 
+                        alert("This model requires a Space API key!")
+                    }
                 }
             }
 
@@ -140,6 +134,19 @@ class EngineClient extends CustomEngine {
             spaces_key: this.spaces_key
         })
         return await client.generate(texts, model, this.target_language)
+        .catch(e => { 
+            if (e instanceof MissingInferenceAPIKeyException || e instanceof MissingSpaceAPIKeyException) { 
+                this.abort()
+                throw new TranslationFailException({ 
+                    message: e.message,
+                    status: 400
+                })
+            }
+            throw new TranslationFailException({
+                message: "Error while fetching.",
+                status: 529
+            })
+        })
     }
 
 

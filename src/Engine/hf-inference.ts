@@ -15,6 +15,12 @@ interface PromptOptions {
 
 export type InferenceModels = keyof typeof InferenceClient.inferenceModels
 
+class MissingInferenceAPIKeyException extends Error { 
+    constructor() { 
+        super("No API key provided for Inference!")
+    }
+}
+
 class InferenceClient extends HfInference { 
     public static inferenceModels = { 
         "deepseek-ai/DeepSeek-R1": "fireworks-ai" as InferenceProvider,
@@ -24,11 +30,12 @@ class InferenceClient extends HfInference {
         "Qwen/Qwen2.5-72B-Instruct": "hf-inference" as InferenceProvider,
         "Qwen/QwQ-32B": "hf-inference" as InferenceProvider,
     }
-    constructor(key: string) { 
-        super(key)
+    constructor(private apiKey: string) { 
+        super(apiKey)
     }
 
     async sendPrompt({ texts, model, target_language, provider }: PromptOptions) { 
+        if (!this.apiKey) { throw new MissingInferenceAPIKeyException() }
         target_language ||= "English - US"
         const response = await this.chatCompletion({ 
             model,
@@ -48,6 +55,6 @@ class InferenceClient extends HfInference {
 }
 
 
-const inference_module = { InferenceClient }
+const inference_module = { InferenceClient, MissingInferenceAPIKeyException }
 export type HuggingFaceInferenceModule = typeof inference_module
 module.exports = inference_module

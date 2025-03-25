@@ -6,11 +6,17 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 interface HugSpacesChatInit { 
-    model_name?: string
-    api_key?: string
+    modelName?: string
+    apiKey?: string
 }
 
 export type SpacesModels = keyof typeof HugSpacesChat.spacesModels
+
+class MissingSpaceAPIKeyException extends Error { 
+    constructor() { 
+        super("No API key provided for restricted Space!")
+    }
+}
 
 class HugSpacesChat { 
     public static spacesModels = { 
@@ -22,26 +28,30 @@ class HugSpacesChat {
         "Command-R-Plus-08-2024": "Nymbo/Command-R-Plus-08-2024",
         "Command-R+": "Nymbo/c4ai-command-r-plus",
     }
-    private model_name?: string
-    private api_key?: string
+    public static restrictedSpaces = new Set<string>()
+    public static isRestricted(model: string) { 
+        return HugSpacesChat.restrictedSpaces.has( HugSpacesChat.spacesModels[model as SpacesModels] )
+    }
+    private modelName?: string
+    private apiKey?: string
     private clientReq?: Promise<IClient | null>
-    constructor({ model_name, api_key }: HugSpacesChatInit = {}) { 
-        if (model_name) { 
-            this.model_name = model_name 
-            this.connect(model_name)
+    constructor({ modelName, apiKey }: HugSpacesChatInit = {}) { 
+        if (modelName) { 
+            this.modelName = modelName 
+            this.connect(modelName)
         }
-        if (api_key) { this.api_key = api_key }
+        if (apiKey) { this.apiKey = apiKey }
     }
 
-    setApiKey(key: string) { this.api_key = key }
+    setApiKey(key: string) { this.apiKey = key }
 
-    connect(model_name?: string) { 
-        model_name = model_name ?? this.model_name
-        if (!model_name) { return }
-        else if (!HugSpacesChat.spacesModels[model_name as never]) { alert('Invalid model!') }
-        else if (model_name !== this.model_name || !this.clientReq) { 
-            if (model_name !== this.model_name) { this.model_name = model_name }
-            this.clientReq = Client.connect(HugSpacesChat.spacesModels[model_name as SpacesModels])
+    connect(modelName?: string) { 
+        modelName = modelName ?? this.modelName
+        if (!modelName) { return }
+        else if (!HugSpacesChat.spacesModels[modelName as never]) { alert('Invalid model!') }
+        else if (modelName !== this.modelName || !this.clientReq) { 
+            if (modelName !== this.modelName) { this.modelName = modelName }
+            this.clientReq = Client.connect(HugSpacesChat.spacesModels[modelName as SpacesModels])
             .catch(() => null)
         }
     }
@@ -78,7 +88,7 @@ class HugSpacesChat {
 }
 
 
-const spaces_module = { HugSpacesChat }
+const spaces_module = { HugSpacesChat, MissingSpaceAPIKeyException }
 export type SpacesModule = typeof spaces_module
 module.exports = spaces_module
 
