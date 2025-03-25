@@ -5,12 +5,14 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 
+export type SpacesModels = keyof typeof HugSpacesChat.spacesModels
+
 class HugSpacesChat { 
-    public readonly spacesModels = { 
+    public static spacesModels = { 
         //"llama-3.1-405b": "aifeifei798/Meta-Llama-3.1-405B-Instruct",
         //"llama-3.1-70b": "aifeifei798/llama-3.1-70b-instruct",
-        "llama-3.1-405b": "Nymbo/Llama-3.1-405B-Instruct",
-        "llama-3.1-405b-fp8": "as-cle-bert/Llama-3.1-405B-FP8",
+        //"llama-3.1-405b": "Nymbo/Llama-3.1-405B-Instruct",
+        //"llama-3.1-405b-fp8": "as-cle-bert/Llama-3.1-405B-FP8",
         "Qwen-2.5-72B-Instruct": "Nymbo/Qwen-2.5-72B-Instruct",
         "Command-R-Plus-08-2024": "Nymbo/Command-R-Plus-08-2024",
         "Command-R+": "Nymbo/c4ai-command-r-plus",
@@ -27,10 +29,10 @@ class HugSpacesChat {
     connect(model_name?: string) { 
         model_name = model_name ?? this.model_name
         if (!model_name) { return null }
-        else if (!this.spacesModels[model_name as never]) { alert('Invalid model!') }
+        else if (!HugSpacesChat.spacesModels[model_name as never]) { alert('Invalid model!') }
         else if (model_name !== this.model_name || !this.clientReq) { 
             if (model_name !== this.model_name) { this.model_name = model_name }
-            this.clientReq = Client.connect(this.spacesModels[model_name as never])
+            this.clientReq = Client.connect(HugSpacesChat.spacesModels[model_name as SpacesModels])
             .catch(() => null)
         }
     }

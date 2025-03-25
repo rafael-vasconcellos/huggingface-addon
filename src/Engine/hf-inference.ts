@@ -13,8 +13,10 @@ interface PromptOptions {
     provider?: string
 }
 
+export type InferenceModels = keyof typeof InferenceClient.inferenceModels
+
 class InferenceClient extends HfInference { 
-    public readonly inferenceModels = { 
+    public static inferenceModels = { 
         "deepseek-ai/DeepSeek-R1": "fireworks-ai" as InferenceProvider,
         "deepseek-ai/DeepSeek-V3": "fireworks-ai" as InferenceProvider,
         "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai" as InferenceProvider,
@@ -30,7 +32,7 @@ class InferenceClient extends HfInference {
         target_language ||= "English - US"
         const response = await this.chatCompletion({ 
             model,
-            provider: provider ?? this.inferenceModels[model as keyof typeof this.inferenceModels],
+            provider: provider ?? InferenceClient.inferenceModels[model as InferenceModels],
             messages: [ 
                 { role: "system", content: systemPrompt(target_language) },
                 { role: "user", content: userPrompt(texts) }
