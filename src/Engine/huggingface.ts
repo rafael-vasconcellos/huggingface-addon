@@ -62,7 +62,8 @@ class HuggingFaceClient {
 
 class EngineClient extends CustomEngine { 
     get model_name(): string { return this.getEngine()?.getOptions('model_name') ?? "Command-R-Plus-08-2024" }
-    get api_key(): string { return "Placeholder" }
+    get api_key(): string { return this.getEngine()?.getOptions('api_key') ?? "Placeholder" }
+    get spaces_key(): string { return this.getEngine()?.getOptions('spaces_key') }
 
     constructor(thisAddon: Addon) { 
         trans.config.maxRequestLength = 25
@@ -86,8 +87,14 @@ class EngineClient extends CustomEngine {
                     },
                     api_key: { 
                         type: "string",
-                        title: "API Key",
+                        title: "API key",
                         description: "Insert your HugginFace key to use HuggingFace Inference (Note: Inference ≠ Spaces)",
+                        required: false
+                    },
+                    spaces_key: { 
+                        type: "string",
+                        title: "Spaces API key",
+                        description: "Use this field if and only IF a space requires an API key.",
                         required: false
                     },
                     target_language: { 
@@ -101,12 +108,14 @@ class EngineClient extends CustomEngine {
 
                 form: [ 
                     { 
+                        key: "model_name"
+                    }, { 
                         key: "api_key",
                         /* onChange: (evt: Event & { target: HTMLInputElement }) => { 
                             if (evt.target?.value) { this.api_key = evt.target.value }
                         } */
                     }, { 
-                        key: "model_name"
+                        key: "spaces_key"
                     }, { 
                         key: "target_language"
                     }, 
@@ -128,6 +137,7 @@ class EngineClient extends CustomEngine {
     public async fetcher(texts: string[], model: string = this.model_name) { 
         const client = new HuggingFaceClient({ 
             inference_key: this.api_key,
+            spaces_key: this.spaces_key
         })
         return await client.generate(texts, model, this.target_language)
     }
