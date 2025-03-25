@@ -9,11 +9,17 @@ const { InferenceClient } = require('./hf-inference') as HuggingFaceInferenceMod
 
 
 
+interface HuggingFaceClientInit { 
+    inference_key: string
+    spaces_key?: string
+}
+
 class HuggingFaceClient { 
     private inferenceClient: InstanceType<typeof InferenceClient>
-    private hugSpacesChat = new HugSpacesChat()
-    constructor(private api_key: string) { 
-        this.inferenceClient = new InferenceClient(api_key)
+    private hugSpacesChat: InstanceType<typeof HugSpacesChat>
+    constructor({ inference_key, spaces_key }: HuggingFaceClientInit) { 
+        this.inferenceClient = new InferenceClient(inference_key)
+        this.hugSpacesChat = new HugSpacesChat({ api_key: spaces_key })
     }
 
     private async sendPrompt(texts: string[], model: string, target_language: string) { 
@@ -120,7 +126,9 @@ class EngineClient extends CustomEngine {
     }
 
     public async fetcher(texts: string[], model: string = this.model_name) { 
-        const client = new HuggingFaceClient(this.api_key)
+        const client = new HuggingFaceClient({ 
+            inference_key: this.api_key,
+        })
         return await client.generate(texts, model, this.target_language)
     }
 

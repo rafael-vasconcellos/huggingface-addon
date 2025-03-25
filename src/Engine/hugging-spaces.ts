@@ -5,6 +5,11 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 
+interface HugSpacesChatInit { 
+    model_name?: string
+    api_key?: string
+}
+
 export type SpacesModels = keyof typeof HugSpacesChat.spacesModels
 
 class HugSpacesChat { 
@@ -18,17 +23,21 @@ class HugSpacesChat {
         "Command-R+": "Nymbo/c4ai-command-r-plus",
     }
     private model_name?: string
+    private api_key?: string
     private clientReq?: Promise<IClient | null>
-    constructor(model_name?: string) { 
+    constructor({ model_name, api_key }: HugSpacesChatInit = {}) { 
         if (model_name) { 
             this.model_name = model_name 
             this.connect(model_name)
         }
+        if (api_key) { this.api_key = api_key }
     }
+
+    setApiKey(key: string) { this.api_key = key }
 
     connect(model_name?: string) { 
         model_name = model_name ?? this.model_name
-        if (!model_name) { return null }
+        if (!model_name) { return }
         else if (!HugSpacesChat.spacesModels[model_name as never]) { alert('Invalid model!') }
         else if (model_name !== this.model_name || !this.clientReq) { 
             if (model_name !== this.model_name) { this.model_name = model_name }
