@@ -1,15 +1,15 @@
-import * as esbuild from 'esbuild';
 import path from 'path';
-import _package from './package.json' assert { type: "json" };
-import fs from 'fs/promises';
+import fs from 'fs';
+import * as esbuild from 'esbuild';
+//import _package from './package.json' assert { type: "json" };
 
 
+
+const distDir = './dist/hugging-spaces/';
+const _package = JSON.parse(fs.readFileSync('./package.json'))
 const entryPoints = Object.keys(_package.dependencies).map(dep =>
   path.resolve('node_modules', dep)
 );
-
-const distDir = './dist/hugging-spaces/';
-
 
 esbuild.build({
   entryPoints,
@@ -31,6 +31,8 @@ esbuild.build({
     ];
 
     files.forEach(file => {
-        fs.copyFile(path.resolve(file.src), path.resolve(file.dest));
+        fs.copyFile(path.resolve(file.src), path.resolve(file.dest), (err) => { 
+           if (err) { console.error(err) }
+        });
     });
 });
