@@ -34,27 +34,27 @@ class CustomEngine {
     private engine: TranslatorEngine
     private progress: Partial<IProgress> = {}
     private clear() { this.progress = {} }
-
+    public optionsForm: TranslationEngineOptionForm
     constructor(engineOptions: TranslationEngineOptions) { 
         engineOptions.mode = "rowByRow"
         trans.translateAllByRows = replaceNativeFunction() ?? trans.translateAllByRows
         this.engine = new TranslatorEngine(engineOptions)
         this.engine.translate = this.translate.bind(this)
         this.engine.abort = this.clear.bind(this)
+        this.optionsForm = new Proxy(this.getEngine().optionsForm, { 
+            get(target, prop, receiver) {
+                return target[prop as keyof TranslationEngineOptionForm]
+            },
+            set(target, prop, value, receiver) { 
+                target[prop as keyof TranslationEngineOptionForm] = value
+                return true
+            }
+        })
     }
 
     get api_key(): string | null { return this.getEngine()?.getOptions('api_key') ?? null }
     get target_language(): string { return this.getEngine()?.getOptions('target_language') ?? "English - US" }
     get api_type(): "free" | "pro" { return this.getEngine()?.getOptions('api_type') ?? "free" }
-    optionsForm = new Proxy(this.getEngine().optionsForm, { 
-        get(target, prop, receiver) {
-            return target[prop as keyof TranslationEngineOptionForm]
-        },
-        set(target, prop, value, receiver) { 
-            target[prop as keyof TranslationEngineOptionForm] = value
-            return true
-        }
-    })
 
     public update(option: string, value: any) { 
         this.getEngine().update(option, value)
