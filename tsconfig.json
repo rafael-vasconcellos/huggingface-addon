@@ -103,6 +103,7 @@
     "paths": { 
       "jsonrepair": ["./lib/jsonrepair"],
       "@gradio/client": ["./lib/@gradio/client"],
+      "@huggingface/inference": ["./lib/@huggingface/inference"],
       "src/*": ["www/addons/hugging-spaces/*"]
     }
 
