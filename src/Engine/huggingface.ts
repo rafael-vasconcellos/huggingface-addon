@@ -109,7 +109,8 @@ class EngineClient extends CustomEngine {
                     if (key === "api_key") { 
                         const spacesModels = Object.keys(HugSpacesChat.spacesModels)
                         const inferenceModels = Object.keys(InferenceClient.inferenceModels)
-                        if (value) {}
+                        if (value) { this.optionsForm.schema.model_name.enum = [...spacesModels, ...inferenceModels] }
+                        else { this.optionsForm.schema.model_name.enum = spacesModels }
                     }
                     this.update(key, value);
                 }

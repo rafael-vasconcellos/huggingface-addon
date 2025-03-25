@@ -46,6 +46,15 @@ class CustomEngine {
     get api_key(): string | null { return this.getEngine()?.getOptions('api_key') ?? null }
     get target_language(): string { return this.getEngine()?.getOptions('target_language') ?? "English - US" }
     get api_type(): "free" | "pro" { return this.getEngine()?.getOptions('api_type') ?? "free" }
+    optionsForm = new Proxy(this.getEngine().optionsForm, { 
+        get(target, prop, receiver) {
+            return target[prop as keyof TranslationEngineOptionForm]
+        },
+        set(target, prop, value, receiver) { 
+            target[prop as keyof TranslationEngineOptionForm] = value
+            return true
+        }
+    })
 
     public update(option: string, value: any) { 
         this.getEngine().update(option, value)
