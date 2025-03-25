@@ -5,20 +5,18 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 
-const spaces_models = { 
-    //"llama-3.1-405b": "aifeifei798/Meta-Llama-3.1-405B-Instruct",
-    //"llama-3.1-70b": "aifeifei798/llama-3.1-70b-instruct",
-    "llama-3.1-405b": "Nymbo/Llama-3.1-405B-Instruct",
-    "llama-3.1-405b-fp8": "as-cle-bert/Llama-3.1-405B-FP8",
-    "Qwen-2.5-72B-Instruct": "Nymbo/Qwen-2.5-72B-Instruct",
-    "Command-R-Plus-08-2024": "Nymbo/Command-R-Plus-08-2024",
-    "Command-R+": "Nymbo/c4ai-command-r-plus",
-}
-
 class HugSpacesChat { 
-    private clientReq?: Promise<IClient | null>
+    public readonly spacesModels = { 
+        //"llama-3.1-405b": "aifeifei798/Meta-Llama-3.1-405B-Instruct",
+        //"llama-3.1-70b": "aifeifei798/llama-3.1-70b-instruct",
+        "llama-3.1-405b": "Nymbo/Llama-3.1-405B-Instruct",
+        "llama-3.1-405b-fp8": "as-cle-bert/Llama-3.1-405B-FP8",
+        "Qwen-2.5-72B-Instruct": "Nymbo/Qwen-2.5-72B-Instruct",
+        "Command-R-Plus-08-2024": "Nymbo/Command-R-Plus-08-2024",
+        "Command-R+": "Nymbo/c4ai-command-r-plus",
+    }
     private model_name?: string
-
+    private clientReq?: Promise<IClient | null>
     constructor(model_name?: string) { 
         if (model_name) { 
             this.model_name = model_name 
@@ -29,19 +27,19 @@ class HugSpacesChat {
     connect(model_name?: string) { 
         model_name = model_name ?? this.model_name
         if (!model_name) { return null }
-        else if (!spaces_models[model_name as never]) { alert('Invalid model!') }
+        else if (!this.spacesModels[model_name as never]) { alert('Invalid model!') }
         else if (model_name !== this.model_name || !this.clientReq) { 
             if (model_name !== this.model_name) { this.model_name = model_name }
-            this.clientReq = Client.connect(spaces_models[model_name as never])
+            this.clientReq = Client.connect(this.spacesModels[model_name as never])
             .catch(() => null)
         }
     }
 
-    async sendPrompt(text: string[], target_language: string) { 
+    async sendPrompt(texts: string[], target_language: string = "English - US") { 
         const client = await this.clientReq
         if (client) { 
             const response = await client.predict("/chat", { 		
-                message: userPrompt(text), 
+                message: userPrompt(texts), 
                 system_message: systemPrompt(target_language), 
                 //max_tokens: 1, 
                 temperature: 0,
