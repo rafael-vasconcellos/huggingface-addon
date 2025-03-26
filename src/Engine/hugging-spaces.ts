@@ -49,11 +49,11 @@ class HugSpacesChat {
     private apiKey?: string
     private clientReq?: Promise<IClient | null>
     constructor({ modelName, apiKey }: HugSpacesChatInit = {}) { 
+        if (apiKey) { this.apiKey = apiKey }
         if (modelName) { 
             this.modelName = modelName 
             this.connect(modelName)
         }
-        if (apiKey) { this.apiKey = apiKey }
     }
 
     setApiKey(key: string) { this.apiKey = key }
