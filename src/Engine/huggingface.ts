@@ -55,9 +55,9 @@ class HuggingFaceClient {
 }
 
 class EngineClient extends CustomEngine { 
-    get model_name(): string { return this.getEngine()?.getOptions('model_name') ?? "Command-R-Plus-08-2024" }
-    get api_key(): string { return this.getEngine()?.getOptions('api_key') ?? "Placeholder" }
-    get spaces_key(): string { return this.getEngine()?.getOptions('spaces_key') }
+    get model_name(): string { return this.getEngine()?.getOptions('model_name') || "Command-R-Plus-08-2024" }
+    get api_key(): string { return this.getEngine()?.getOptions('api_key') || "Placeholder" }
+    get spaces_key(): string { return this.getEngine()?.getOptions('spaces_key') || '' }
 
     constructor(thisAddon: Addon) { 
         trans.config.maxRequestLength = 25
@@ -115,7 +115,7 @@ class EngineClient extends CustomEngine {
                     }, 
                 ],
                 onChange: (_: HTMLInputElement, key: string, value: any) => { 
-                    this.update(key, value);
+                    this.update(key, typeof value === "string"? value : "") 
                     if (key === "model_name" && InferenceClient.inferenceModels[value as InferenceModel] && !this.api_key) { 
                         alert("This model requires an Inference API key!")
                     }

@@ -18,6 +18,8 @@ class MissingSpaceAPIKeyException extends Error {
     }
 }
 
+const openrouter_space = "playmak3r/openrouter-proxy"
+
 class HugSpacesChat { 
     public static spacesModels = { 
         //"llama-3.1-405b": "aifeifei798/Meta-Llama-3.1-405B-Instruct",
@@ -27,8 +29,19 @@ class HugSpacesChat {
         "Qwen-2.5-72B-Instruct": "Nymbo/Qwen-2.5-72B-Instruct",
         "Command-R-Plus-08-2024": "Nymbo/Command-R-Plus-08-2024",
         "Command-R+": "Nymbo/c4ai-command-r-plus",
+
+        "cohere/command-r-plus-08-2024": openrouter_space,
+        "qwen/qwq-32b:free": openrouter_space,
+        "qwen/qwen-2.5-72b-instruct:free": openrouter_space,
+        "deepseek/deepseek-r1:free": openrouter_space,
+        "deepseek/deepseek-chat:free": openrouter_space,
+        "deepseek/deepseek-chat-v3-0324:free": openrouter_space,
+        "openai/gpt-4o": openrouter_space,
+        "google/gemma-3-27b-it:free": openrouter_space,
+        "google/gemini-2.0-flash-exp:free": openrouter_space,
+        "google/gemini-2.0-pro-exp-02-05:free": openrouter_space,
     }
-    public static restrictedSpaces = new Set<string>()
+    public static restrictedSpaces = new Set<string>([ openrouter_space ])
     public static isRestricted(model: string) { 
         return HugSpacesChat.restrictedSpaces.has( HugSpacesChat.spacesModels[model as SpacesModel] )
     }
@@ -98,8 +111,21 @@ const spaces_module = { HugSpacesChat, MissingSpaceAPIKeyException }
 export type SpacesModule = typeof spaces_module
 module.exports = spaces_module
 
-/* const endpoints = { 
-    "llama-3.1-405b": "/chat",
-    "llama-3.1-70b": "/chat",
-    "llama-3.1-405b-fp8": "/chat"
-} */
+/* 
+    const endpoints = { 
+        "llama-3.1-405b": "/chat",
+        "llama-3.1-70b": "/chat",
+        "llama-3.1-405b-fp8": "/chat"
+    }
+
+    "cohere/command-r-plus-08-2024"
+    "qwen/qwq-32b:free"
+    "qwen/qwen-2.5-72b-instruct:free"
+    "deepseek/deepseek-r1:free"
+    "deepseek/deepseek-chat:free"
+    "deepseek/deepseek-chat-v3-0324:free"
+    "openai/gpt-4o"
+    "google/gemma-3-27b-it:free"
+    "google/gemini-2.0-flash-exp:free"
+    "google/gemini-2.0-pro-exp-02-05:free"
+*/
