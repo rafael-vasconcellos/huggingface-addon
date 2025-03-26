@@ -10,7 +10,7 @@ interface HugSpacesChatInit {
     apiKey?: string
 }
 
-export type SpacesModels = keyof typeof HugSpacesChat.spacesModels
+export type SpacesModel = keyof typeof HugSpacesChat.spacesModels
 
 class MissingSpaceAPIKeyException extends Error { 
     constructor() { 
@@ -30,7 +30,7 @@ class HugSpacesChat {
     }
     public static restrictedSpaces = new Set<string>()
     public static isRestricted(model: string) { 
-        return HugSpacesChat.restrictedSpaces.has( HugSpacesChat.spacesModels[model as SpacesModels] )
+        return HugSpacesChat.restrictedSpaces.has( HugSpacesChat.spacesModels[model as SpacesModel] )
     }
     private modelName?: string
     private apiKey?: string
@@ -48,10 +48,13 @@ class HugSpacesChat {
     connect(modelName?: string) { 
         modelName = modelName ?? this.modelName
         if (!modelName) { return }
-        else if (!HugSpacesChat.spacesModels[modelName as never]) { alert('Invalid model!') }
+        else if (!HugSpacesChat.spacesModels[modelName as SpacesModel]) { alert('Invalid model!') }
+        else if (HugSpacesChat.isRestricted(modelName) && !this.apiKey) { 
+            throw new MissingSpaceAPIKeyException()
+        }
         else if (modelName !== this.modelName || !this.clientReq) { 
             if (modelName !== this.modelName) { this.modelName = modelName }
-            this.clientReq = Client.connect(HugSpacesChat.spacesModels[modelName as SpacesModels])
+            this.clientReq = Client.connect(HugSpacesChat.spacesModels[modelName as SpacesModel])
             .catch(() => null)
         }
     }
@@ -61,6 +64,9 @@ class HugSpacesChat {
         if (client) { 
             const response = await client.predict("/chat", { 		
                 message: userPrompt(texts), 
+                model: this.modelName,
+                api_key: this.apiKey,
+                stream: false,
                 system_message: systemPrompt(target_language), 
                 //max_tokens: 1, 
                 temperature: 0,

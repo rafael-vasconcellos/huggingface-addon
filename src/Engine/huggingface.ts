@@ -1,7 +1,7 @@
 import { ICustomEngineModule } from './Custom';
 import { IPromptModule } from './Prompt';
-import { SpacesModule, SpacesModels } from './hugging-spaces';
-import { HuggingFaceInferenceModule, InferenceModels } from './hf-inference';
+import { SpacesModule, SpacesModel } from './hugging-spaces';
+import { HuggingFaceInferenceModule, InferenceModel } from './hf-inference';
 const { CustomEngine, TranslationFailException } = require("./Custom") as ICustomEngineModule;
 const { parseResponse } = require("./Prompt") as IPromptModule;
 const { HugSpacesChat, MissingSpaceAPIKeyException } = require("./hugging-spaces") as SpacesModule;
@@ -23,7 +23,7 @@ class HuggingFaceClient {
     }
 
     private async sendPrompt(texts: string[], model: string, target_language: string) { 
-        if (HugSpacesChat.spacesModels[model as SpacesModels]) { 
+        if (HugSpacesChat.spacesModels[model as SpacesModel]) { 
             this.hugSpacesChat.connect(model)
             return this.hugSpacesChat.sendPrompt(texts, target_language)
 
@@ -116,7 +116,7 @@ class EngineClient extends CustomEngine {
                 ],
                 onChange: (_: HTMLInputElement, key: string, value: any) => { 
                     this.update(key, value);
-                    if (key === "model_name" && InferenceClient.inferenceModels[value as InferenceModels] && !this.api_key) { 
+                    if (key === "model_name" && InferenceClient.inferenceModels[value as InferenceModel] && !this.api_key) { 
                         alert("This model requires an Inference API key!")
                     }
                     if (key === "model_name" && HugSpacesChat.isRestricted(value) && !this.spaces_key) { 
