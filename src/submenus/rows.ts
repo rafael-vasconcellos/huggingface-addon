@@ -1,5 +1,5 @@
 interface SelectionTranslatorOptions { 
-	clientBuild: ClientBuilder
+	clientBuild?: ClientBuilder
 	rowModels: string[]
 	package_name: string
 }

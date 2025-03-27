@@ -2,10 +2,12 @@ import { ICustomEngineModule } from './Custom';
 import { IPromptModule } from './Prompt';
 import { SpacesModule } from './hugging-spaces';
 import { HuggingFaceInferenceModule, InferenceModel } from './hf-inference';
+import { RowsModule } from '../submenus/rows';
 const { CustomEngine, TranslationFailException } = require("./Custom") as ICustomEngineModule;
 const { parseResponse } = require("./Prompt") as IPromptModule;
 const { HugSpacesChat, MissingSpaceAPIKeyException } = require("./hugging-spaces") as SpacesModule;
-const { InferenceClient, MissingInferenceAPIKeyException } = require('./hf-inference') as HuggingFaceInferenceModule
+const { InferenceClient, MissingInferenceAPIKeyException } = require('./hf-inference') as HuggingFaceInferenceModule;
+const { createSubmenu } = require("../submenus/rows") as RowsModule;
 
 
 
@@ -55,9 +57,13 @@ class HuggingFaceClient {
 }
 
 class EngineClient extends CustomEngine { 
+    public static models = [...Object.keys(HugSpacesChat.modelSpaces), ...Object.keys(InferenceClient.inferenceModels)]
+    public readonly package_name: string
+    public readonly package_title: string
     get model_name(): string { return this.getEngine()?.getOptions('model_name') || "Command-R-Plus-08-2024" }
     get api_key(): string { return this.getEngine()?.getOptions('api_key') || "Placeholder" }
     get spaces_key(): string { return this.getEngine()?.getOptions('spaces_key') || '' }
+    get rows_translation_models(): string { return this.getEngine()?.getOptions('rows_translation_models') || 'google/gemini-2.0-flash-exp:free,qwen/qwen-2.5-72b-instruct:free,deepseek/deepseek-chat-v3-0324:free,openai/gpt-4o' }
 
     constructor(thisAddon: Addon) { 
         trans.config.maxRequestLength = 25
@@ -77,7 +83,7 @@ class EngineClient extends CustomEngine {
                         description: "Choose the model",
                         required: false,
                         default: "Command-R-Plus-08-2024",
-                        enum: [...Object.keys(HugSpacesChat.modelSpaces), ...Object.keys(InferenceClient.inferenceModels)]
+                        enum: EngineClient.models
                     },
                     api_key: { 
                         type: "string",
@@ -90,6 +96,13 @@ class EngineClient extends CustomEngine {
                         title: "Spaces API key",
                         description: "Use this field if and only IF a space requires an API key.",
                         required: false
+                    },
+                    rows_translation_models: { 
+                        type: "string",
+                        title: "Models for rows translation",
+                        description: "Type the name of the models to use for translating entire selected rows. format: model1,model2,etc. (order matters)",
+                        required: false,
+                        default: 'google/gemini-2.0-flash-exp:free,qwen/qwen-2.5-72b-instruct:free,deepseek/deepseek-chat-v3-0324:free,openai/gpt-4o'
                     },
                     target_language: { 
                         type: "string",
@@ -111,21 +124,27 @@ class EngineClient extends CustomEngine {
                     }, { 
                         key: "spaces_key"
                     }, { 
+                        key: "rows_translation_models"
+                    }, { 
                         key: "target_language"
                     }, 
                 ],
                 onChange: (_: HTMLInputElement, key: string, value: any) => { 
                     this.update(key, typeof value === "string"? value : "") 
+                    if (key === "rows_translation_models") { this.setRowsTranslationContextMenu() }
                     if (key === "model_name" && InferenceClient.inferenceModels[value as InferenceModel] && !this.api_key) { 
                         alert("This model requires an Inference API key!")
                     }
-                    if (key === "model_name" && HugSpacesChat.isRestricted(value) && !this.spaces_key) { 
+                    else if (key === "model_name" && HugSpacesChat.isRestricted(value) && !this.spaces_key) { 
                         alert("This model requires a Space API key!")
                     }
                 }
             }
 
         })
+        this.package_name = thisAddon.package.name
+        this.package_title = thisAddon.package.title
+        this.setRowsTranslationContextMenu()
     }
 
     public async fetcher(texts: string[], model: string = this.model_name) { 
@@ -146,6 +165,16 @@ class EngineClient extends CustomEngine {
                 message: "Error while fetching.",
                 status: 529
             })
+        })
+    }
+
+    setRowsTranslationContextMenu() { 
+        if (!this.package_name || !this.package_title || !this.rows_translation_models) { return }
+        trans.gridContextMenu[this.package_name] = createSubmenu({ 
+            rowModels: this.rows_translation_models.split(','),
+            package_name: this.package_name,
+            package_title: this.package_title,
+            models: EngineClient.models
         })
     }
 
