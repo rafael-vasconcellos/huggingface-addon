@@ -44,6 +44,12 @@ declare class TranslatorEngine {
 
     targetUrl: string;
     targetUrls: Array<string>;
+    isDisabled: boolean
+    skipReferencePair: boolean
+
+
+    // custom
+    fetcher(texts: string[], model: string): Promise<string[]>
 
     // Variables
     //[id: string]: any;
