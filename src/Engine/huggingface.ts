@@ -1,6 +1,6 @@
 import { ICustomEngineModule } from './Custom';
 import { IPromptModule } from './Prompt';
-import { SpacesModule, SpacesModel } from './hugging-spaces';
+import { SpacesModule } from './hugging-spaces';
 import { HuggingFaceInferenceModule, InferenceModel } from './hf-inference';
 const { CustomEngine, TranslationFailException } = require("./Custom") as ICustomEngineModule;
 const { parseResponse } = require("./Prompt") as IPromptModule;
@@ -23,7 +23,7 @@ class HuggingFaceClient {
     }
 
     private async sendPrompt(texts: string[], model: string, target_language: string) { 
-        if (HugSpacesChat.spacesModels[model as SpacesModel]) { 
+        if (model in HugSpacesChat.modelSpaces) { 
             this.hugSpacesChat.connect(model)
             return this.hugSpacesChat.sendPrompt(texts, target_language)
 
@@ -77,7 +77,7 @@ class EngineClient extends CustomEngine {
                         description: "Choose the model",
                         required: false,
                         default: "Command-R-Plus-08-2024",
-                        enum: [...Object.keys(HugSpacesChat.spacesModels), ...Object.keys(InferenceClient.inferenceModels)]
+                        enum: [...Object.keys(HugSpacesChat.modelSpaces), ...Object.keys(InferenceClient.inferenceModels)]
                     },
                     api_key: { 
                         type: "string",

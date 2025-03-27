@@ -10,7 +10,7 @@ interface HugSpacesChatInit {
     apiKey?: string
 }
 
-export type SpacesModel = keyof typeof HugSpacesChat.spacesModels
+export type SpacesModel = keyof typeof HugSpacesChat.modelSpaces
 
 class MissingSpaceAPIKeyException extends Error { 
     constructor() { 
@@ -18,10 +18,26 @@ class MissingSpaceAPIKeyException extends Error {
     }
 }
 
+const restrictedSpaces: Record<string, { 
+    name: string
+    init(api_key: string, model: string): Record<string, any>
+} | undefined> = { 
+    "playmak3r/openrouter-proxy": { 
+        name: "playmak3r/openrouter-proxy",
+        init(api_key: string, model: string) { 
+            return { 
+                model,
+                api_key,
+                stream: false,
+            }
+        }
+    }
+}
+
 const openrouter_space = "playmak3r/openrouter-proxy"
 
 class HugSpacesChat { 
-    public static spacesModels = { 
+    public static modelSpaces = { 
         //"llama-3.1-405b": "aifeifei798/Meta-Llama-3.1-405B-Instruct",
         //"llama-3.1-70b": "aifeifei798/llama-3.1-70b-instruct",
         //"llama-3.1-405b": "Nymbo/Llama-3.1-405B-Instruct",
@@ -41,9 +57,13 @@ class HugSpacesChat {
         "google/gemini-2.0-flash-exp:free": openrouter_space,
         "google/gemini-2.0-pro-exp-02-05:free": openrouter_space,
     }
-    public static restrictedSpaces = new Set<string>([ openrouter_space ])
-    public static isRestricted(model: string) { 
-        return HugSpacesChat.restrictedSpaces.has( HugSpacesChat.spacesModels[model as SpacesModel] )
+    public static restrictedSpaces = restrictedSpaces
+    public static isRestricted(model: string): boolean { 
+        return HugSpacesChat.modelSpaces[model as SpacesModel] in HugSpacesChat.restrictedSpaces
+    }
+    public getRequestBody(model: string, apiKey?: string) { 
+        const space = HugSpacesChat.restrictedSpaces[HugSpacesChat.modelSpaces[model as SpacesModel]]
+        return space?.init(apiKey as string, model)
     }
     private modelName?: string
     private apiKey?: string
@@ -61,13 +81,13 @@ class HugSpacesChat {
     connect(modelName?: string) { 
         modelName = modelName ?? this.modelName
         if (!modelName) { return }
-        else if (!HugSpacesChat.spacesModels[modelName as SpacesModel]) { alert('Invalid model!') }
+        else if (!(modelName in HugSpacesChat.modelSpaces)) { alert('Invalid model!') }
         else if (HugSpacesChat.isRestricted(modelName) && !this.apiKey) { 
             throw new MissingSpaceAPIKeyException()
         }
         else if (modelName !== this.modelName || !this.clientReq) { 
             if (modelName !== this.modelName) { this.modelName = modelName }
-            this.clientReq = Client.connect(HugSpacesChat.spacesModels[modelName as SpacesModel])
+            this.clientReq = Client.connect(HugSpacesChat.modelSpaces[modelName as SpacesModel])
             .catch(() => null)
         }
     }
@@ -77,9 +97,7 @@ class HugSpacesChat {
         if (client) { 
             const response = await client.predict("/chat", { 		
                 message: userPrompt(texts), 
-                model: this.modelName,
-                api_key: this.apiKey,
-                stream: false,
+                ...this.getRequestBody(this.modelName as string, this.apiKey),
                 system_message: systemPrompt(target_language), 
                 //max_tokens: 1, 
                 temperature: 0,
