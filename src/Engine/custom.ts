@@ -41,6 +41,7 @@ class CustomEngine {
         this.engine = new TranslatorEngine(engineOptions)
         this.engine.translate = this.translate.bind(this)
         this.engine.abort = this.clear.bind(this)
+        this.engine.fetcher = this.fetcher.bind(this)
         this.optionsForm = new Proxy(this.getEngine().optionsForm, { 
             get(target, prop, receiver) {
                 return target[prop as keyof TranslationEngineOptionForm]
