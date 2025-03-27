@@ -1,7 +1,7 @@
 {
   "name": "hugging-spaces-addon",
-  "title": "HuggingSpaces",
-  "description": "Hugging Face models support for Translator++.",
+  "title": "HuggingFace",
+  "description": "Hugging Face stuff support for Translator++.",
   "author": "github.com/rafael-vasconcellos",
   "version": "1.0.0",
   "main": "main.js",
