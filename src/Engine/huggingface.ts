@@ -161,6 +161,13 @@ class EngineClient extends CustomEngine {
                     status: 400
                 })
             }
+            else if (e instanceof TranslationFailException) { 
+                throw new TranslationFailException({ 
+                    message: e.message,
+                    status: e.status
+                })
+            }
+
             throw new TranslationFailException({
                 message: "Error while fetching.",
                 status: 529
