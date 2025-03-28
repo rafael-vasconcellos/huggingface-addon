@@ -29,6 +29,7 @@ const restrictedSpaces: Record<string, {
                 model,
                 api_key,
                 stream: false,
+                response_format: "json_object"
             }
         }
     }
