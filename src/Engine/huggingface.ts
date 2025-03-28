@@ -169,7 +169,7 @@ class EngineClient extends CustomEngine {
             }
 
             throw new TranslationFailException({
-                message: "Error while fetching.",
+                message: `Error while fetching: ${e}`,
                 status: 529
             })
         })
