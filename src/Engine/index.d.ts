@@ -1,7 +1,7 @@
 declare class TranslatorEngine {
     constructor(options: TranslationEngineOptions);
-    update(id: string, value: any);
     optionsForm: TranslationEngineOptionForm;
+    update(id: string, value: any);
     init(): void;
     on(
         eventType: string, 
@@ -9,7 +9,6 @@ declare class TranslatorEngine {
     ): void;
     escapeCharacter(sentence: string);
     escapeLineBreak(text: string);
-    id: string;
     fixTranslationFormatting(text: string);
     getOptions(...args: any[]): any;
     loadOptions(): void;
@@ -18,6 +17,7 @@ declare class TranslatorEngine {
     preProcessText(text: string, options: any);
     replacer(match, p1, p2, p3, offset, string): string;
     replacerS(match, p1, p2, p3, offset, string): string;
+    id: string;
     maxRequestLength: number;
     batchDelay: number;
 
@@ -42,6 +42,7 @@ declare class TranslatorEngine {
     pause(): void;
     resume(): void;
 
+    targetColumn: number
     targetUrl: string;
     targetUrls: Array<string>;
     isDisabled: boolean
@@ -50,7 +51,6 @@ declare class TranslatorEngine {
 
     // custom
     fetcher(texts: string[], model: string): Promise<string[]>
-
     // Variables
     //[id: string]: any;
 }
@@ -62,9 +62,13 @@ declare type TranslatorOptions = {
     progress: (perc: number) => void;
     sl: string;
     tl: string;
+    saveOnEachBatch: boolean;
 }
 
-declare type ErrorEvt = { status?: number | string }
+declare type ErrorEvt = { 
+    status?: number | string 
+    message?: string
+}
 
 declare type TranslatorEngineResults = {
     sourceText: string;
