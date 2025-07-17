@@ -1,5 +1,5 @@
 {
-  "name": "hugging-spaces-addon",
+  "name": "huggingface-addon",
   "title": "HuggingFace",
   "description": "Hugging Face stuff support for Translator++.",
   "author": {

@@ -5,7 +5,7 @@ import * as esbuild from 'esbuild';
 
 
 
-const distDir = './dist/hugging-spaces/';
+const distDir = './dist/huggingface/';
 const _package = JSON.parse(fs.readFileSync('./package.json'))
 const entryPoints = Object.keys(_package.dependencies).map(dep =>
   path.resolve('node_modules', dep)

@@ -98,13 +98,13 @@
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true, /* Skip type checking all .d.ts files. */
-    "outDir": "./dist/hugging-spaces",
+    "outDir": "./dist/huggingface",
     "baseUrl": "./",
     "paths": { 
       "jsonrepair": ["./lib/jsonrepair"],
       "@gradio/client": ["./lib/@gradio/client"],
       "@huggingface/inference": ["./lib/@huggingface/inference"],
-      "src/*": ["www/addons/hugging-spaces/*"]
+      "src/*": ["www/addons/huggingface/*"]
     }
 
   },
