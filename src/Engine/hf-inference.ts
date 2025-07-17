@@ -10,7 +10,7 @@ interface PromptOptions {
     texts: string[], 
     model: string, 
     target_language?: string,
-    provider?: string
+    provider?: InferenceProvider
 }
 
 export type InferenceModel = keyof typeof InferenceClient.InferenceModels
