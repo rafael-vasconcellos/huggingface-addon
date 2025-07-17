@@ -1,4 +1,4 @@
-import { ICustomEngineModule } from "./Engine/Custom"
+import { ICustomEngineModule } from "./Engine/custom"
 
 try {
 	const { EngineClient } = require("www/addons/hugging-spaces/Engine/huggingface") as ICustomEngineModule;

@@ -1,4 +1,4 @@
-import { ICustomEngineModule } from './Custom';
+import { ICustomEngineModule } from './custom';
 import { IPromptModule } from './Prompt';
 import { SpacesModule } from './hugging-spaces';
 import { HuggingFaceInferenceModule, InferenceModel } from './hf-inference';
@@ -24,40 +24,23 @@ class HuggingFaceClient {
         this.hugSpacesChat = new HugSpacesChat({ apiKey: spaces_key })
     }
 
-    private async sendPrompt(texts: string[], model: string, target_language: string) { 
+    public async sendPrompt(texts: string[], model: string, target_language: string) { 
         if (model in HugSpacesChat.modelSpaces) { 
             this.hugSpacesChat.connect(model)
             return this.hugSpacesChat.sendPrompt(texts, target_language)
 
-        } else { 
-            return this.inferenceClient.sendPrompt({ 
-                texts,
-                model,
-                target_language,
-            })
-        }
-    }
-
-    public async generate(texts: string[], model: string, target_language: string = "English - US") { 
-        const response = await this.sendPrompt(texts, model, target_language)
-        const result = await parseResponse(response) 
-        if (result.length!==texts.length) { 
-            const message = result.length === 0? 
-				"Failed to parse: " + response 
-				: `Unexpected error: length ${result.length} out of ${texts.length}.` + '\n\n' + response;
-            throw new TranslationFailException({
-                message,
-                status: 200
-            }) 
-        }
-
-        return result
+        } 
+        return this.inferenceClient.sendPrompt({ 
+            texts,
+            model,
+            target_language,
+        })
     }
 
 }
 
 class EngineClient extends CustomEngine { 
-    public static models = [...Object.keys(HugSpacesChat.modelSpaces), ...Object.keys(InferenceClient.inferenceModels)]
+    public static models = [...Object.keys(HugSpacesChat.modelSpaces), ...Object.keys(InferenceClient.InferenceModels)]
     public readonly package_name: string
     public readonly package_title: string
     get model_name(): string { return this.getEngine()?.getOptions('model_name') || "Command-R-Plus-08-2024" }
@@ -84,7 +67,7 @@ class EngineClient extends CustomEngine {
                         description: "Choose the model",
                         required: false,
                         default: "Command-R-Plus-08-2024",
-                        enum: EngineClient.models
+                        enum: Object.keys(InferenceClient.InferenceModels)
                     },
                     api_key: { 
                         type: "string",
@@ -92,12 +75,12 @@ class EngineClient extends CustomEngine {
                         description: "Insert your HugginFace key to use HuggingFace Inference (Note: Inference ≠ Spaces)",
                         required: false
                     },
-                    spaces_key: { 
+                    /* spaces_key: { 
                         type: "string",
                         title: "Spaces API key",
                         description: "Use this field if and only IF a space requires an API key.",
                         required: false
-                    },
+                    }, */
                     rows_translation_models: { 
                         type: "string",
                         title: "Models for rows translation",
@@ -118,13 +101,10 @@ class EngineClient extends CustomEngine {
                     { 
                         key: "model_name"
                     }, { 
-                        key: "api_key",
-                        /* onChange: (evt: Event & { target: HTMLInputElement }) => { 
-                            if (evt.target?.value) { this.api_key = evt.target.value }
-                        } */
-                    }, { 
+                        key: "api_key"
+                    }, /* { 
                         key: "spaces_key"
-                    }, { 
+                    },  */{ 
                         key: "rows_translation_models"
                     }, { 
                         key: "target_language"
@@ -133,12 +113,12 @@ class EngineClient extends CustomEngine {
                 onChange: (_: HTMLInputElement, key: string, value: any) => { 
                     this.update(key, typeof value === "string"? value : "") 
                     if (key === "rows_translation_models") { this.setRowsTranslationContextMenu() }
-                    if (key === "model_name" && InferenceClient.inferenceModels[value as InferenceModel] && !this.api_key) { 
+                    if (key === "model_name" && InferenceClient.InferenceModels[value as InferenceModel] && !this.api_key) { 
                         alert("This model requires an Inference API key!")
                     }
-                    else if (key === "model_name" && HugSpacesChat.isRestricted(value) && !this.spaces_key) { 
+                    /* else if (key === "model_name" && HugSpacesChat.isRestricted(value) && !this.spaces_key) { 
                         alert("This model requires a Space API key!")
-                    }
+                    } */
                 }
             }
 
@@ -149,11 +129,12 @@ class EngineClient extends CustomEngine {
     }
 
     public async fetcher(texts: string[], model: string = this.model_name) { 
-        const client = new HuggingFaceClient({ 
-            inference_key: this.api_key,
-            spaces_key: this.spaces_key
+        const client = new InferenceClient(this.api_key)
+        const response = await client.sendPrompt({ 
+            texts,
+            model,
+            target_language: this.target_language
         })
-        return await client.generate(texts, model, this.target_language)
         .catch(e => { 
             if (e instanceof MissingInferenceAPIKeyException || e instanceof MissingSpaceAPIKeyException) { 
                 this.abort()
@@ -162,18 +143,24 @@ class EngineClient extends CustomEngine {
                     status: 400
                 })
             }
-            else if (e instanceof TranslationFailException) { 
-                throw new TranslationFailException({ 
-                    message: e.message,
-                    status: e.status
-                })
-            }
-
             throw new TranslationFailException({
                 message: `Error while fetching: ${e}`,
                 status: 529
             })
         })
+
+        const result = await parseResponse(response, texts.length) 
+        if (result.length !== texts.length || !(result instanceof Array)) { 
+            const message = result.length === 0? 
+				"Failed to parse JSON."
+				: `Unexpected error: length ${result.length} out of ${texts.length}.` + '\n\n' + response;
+            throw new TranslationFailException({
+                message,
+                status: 200
+            }) 
+        } //else if (result.length > texts.length) { result = result.slice(0, texts.length) }
+
+        return result
     }
 
     setRowsTranslationContextMenu() { 

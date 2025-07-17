@@ -4,7 +4,7 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 
-type InferenceProvider = "fireworks-ai" | "hyperbolic" | "together" | "novita" | "nebius" | "sambanova" | "hf-inference"
+type InferenceProvider = "fireworks-ai" | "hyperbolic" | "together" | "novita" | "nebius" | "sambanova" | "hf-inference" | "featherless-ai"
 
 interface PromptOptions { 
     texts: string[], 
@@ -13,7 +13,7 @@ interface PromptOptions {
     provider?: string
 }
 
-export type InferenceModel = keyof typeof InferenceClient.inferenceModels
+export type InferenceModel = keyof typeof InferenceClient.InferenceModels
 
 class MissingInferenceAPIKeyException extends Error { 
     constructor() { 
@@ -22,14 +22,18 @@ class MissingInferenceAPIKeyException extends Error {
 }
 
 class InferenceClient extends HfInference { 
-    public static inferenceModels = { 
+    public static InferenceModels = { 
         "deepseek-ai/DeepSeek-V3": "fireworks-ai" as InferenceProvider,
         "deepseek-ai/DeepSeek-V3-0324": "fireworks-ai" as InferenceProvider,
         "deepseek-ai/DeepSeek-R1": "fireworks-ai" as InferenceProvider,
-        "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai" as InferenceProvider,
-        "google/gemma-3-27b-it": "hf-inference" as InferenceProvider,
+        "deepseek-ai/DeepSeek-R1-0528": "fireworks-ai" as InferenceProvider,
+        "Qwen/Qwen3-235B-A22B": "fireworks-ai" as InferenceProvider,
         "Qwen/Qwen2.5-72B-Instruct": "hf-inference" as InferenceProvider,
         "Qwen/QwQ-32B": "hf-inference" as InferenceProvider,
+        "moonshotai/Kimi-K2-Instruct": "groq" as InferenceProvider,
+        "shisa-ai/shisa-v2-llama3.3-70b": "featherless-ai" as InferenceProvider,
+        "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai" as InferenceProvider,
+        "google/gemma-3-27b-it": "hf-inference" as InferenceProvider,
     }
     constructor(private apiKey: string) { 
         super(apiKey)
@@ -40,7 +44,7 @@ class InferenceClient extends HfInference {
         target_language ||= "English - US"
         const response = await this.chatCompletion({ 
             model,
-            provider: provider ?? InferenceClient.inferenceModels[model as InferenceModel],
+            provider: provider ?? InferenceClient.InferenceModels[model as InferenceModel],
             messages: [ 
                 { role: "system", content: systemPrompt(target_language) },
                 { role: "user", content: userPrompt(texts) }
@@ -59,3 +63,8 @@ class InferenceClient extends HfInference {
 const inference_module = { InferenceClient, MissingInferenceAPIKeyException }
 export type HuggingFaceInferenceModule = typeof inference_module
 module.exports = inference_module
+
+
+/*
+    
+*/
