@@ -4,7 +4,7 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 
-type InferenceProvider = "fireworks-ai" | "hyperbolic" | "together" | "novita" | "nebius" | "sambanova" | "hf-inference" | "featherless-ai"
+type InferenceProvider = "fireworks-ai" | "hyperbolic" | "together" | "novita" | "nebius" | "sambanova" | "hf-inference" | "featherless-ai" | "groq"
 
 interface PromptOptions { 
     texts: string[], 
@@ -22,18 +22,22 @@ class MissingInferenceAPIKeyException extends Error {
 }
 
 class InferenceClient extends HfInference { 
-    public static InferenceModels = { 
-        "deepseek-ai/DeepSeek-V3": "fireworks-ai" as InferenceProvider,
-        "deepseek-ai/DeepSeek-V3-0324": "fireworks-ai" as InferenceProvider,
-        "deepseek-ai/DeepSeek-R1": "fireworks-ai" as InferenceProvider,
-        "deepseek-ai/DeepSeek-R1-0528": "fireworks-ai" as InferenceProvider,
-        "Qwen/Qwen3-235B-A22B": "fireworks-ai" as InferenceProvider,
-        "Qwen/Qwen2.5-72B-Instruct": "hf-inference" as InferenceProvider,
-        "Qwen/QwQ-32B": "hf-inference" as InferenceProvider,
-        "moonshotai/Kimi-K2-Instruct": "groq" as InferenceProvider,
-        "shisa-ai/shisa-v2-llama3.3-70b": "featherless-ai" as InferenceProvider,
-        "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai" as InferenceProvider,
-        "google/gemma-3-27b-it": "hf-inference" as InferenceProvider,
+    public static InferenceModels: Record<string, InferenceProvider> = { 
+        "openai/gpt-oss-120b": "fireworks-ai",
+        "deepseek-ai/DeepSeek-R1": "fireworks-ai",
+        "deepseek-ai/DeepSeek-R1-0528": "fireworks-ai",
+        "deepseek-ai/DeepSeek-V3": "fireworks-ai",
+        "deepseek-ai/DeepSeek-V3-0324": "fireworks-ai",
+        "deepseek-ai/DeepSeek-V3.1": "fireworks-ai",
+        "Qwen/Qwen3-235B-A22B": "fireworks-ai",
+        "Qwen/Qwen2.5-72B-Instruct": "hf-inference",
+        "Qwen/QwQ-32B": "hf-inference",
+        "moonshotai/Kimi-K2-Instruct": "groq",
+        "moonshotai/Kimi-K2-Instruct-0905": "novita",
+        "zai-org/GLM-4.5": "fireworks-ai",
+        "shisa-ai/shisa-v2-llama3.3-70b": "featherless-ai",
+        "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai",
+        "google/gemma-3-27b-it": "hf-inference",
     }
     constructor(private apiKey: string) { 
         super(apiKey)
