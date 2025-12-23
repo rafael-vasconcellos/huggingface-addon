@@ -4,7 +4,7 @@ const { systemPrompt, userPrompt } = require("./Prompt") as IPromptModule;
 
 
 
-type InferenceProvider = "fireworks-ai" | "hyperbolic" | "together" | "novita" | "nebius" | "sambanova" | "hf-inference" | "featherless-ai" | "groq"
+type InferenceProvider = "fireworks-ai" | "hyperbolic" | "together" | "novita" | "nebius" | "sambanova" | "hf-inference" | "featherless-ai" | "groq" | "cohere"
 
 interface PromptOptions { 
     texts: string[], 
@@ -32,6 +32,7 @@ class InferenceClient extends HfInference {
         "deepseek-ai/DeepSeek-V3.1": "fireworks-ai",
         "deepseek-ai/DeepSeek-V3.1-Terminus": "novita",
         "deepseek-ai/DeepSeek-V3.2-Exp": "novita",
+        "deepseek-ai/DeepSeek-V3.2": "novita",
 
         "Qwen/Qwen3-Coder-480B-A35B-Instruct": "novita",
         "Qwen/Qwen3-Next-80B-A3B-Instruct": "novita",
@@ -42,9 +43,12 @@ class InferenceClient extends HfInference {
         "moonshotai/Kimi-K2-Instruct": "groq",
         "moonshotai/Kimi-K2-Instruct-0905": "novita",
 
+        "CohereLabs/command-a-translate-08-2025": "cohere",
+
         "google/gemma-3-27b-it": "hf-inference",
         "zai-org/GLM-4.5": "fireworks-ai",
         "zai-org/GLM-4.6": "novita",
+        "zai-org/GLM-4.7": "novita",
         "shisa-ai/shisa-v2-llama3.3-70b": "featherless-ai",
         "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai",
     }
