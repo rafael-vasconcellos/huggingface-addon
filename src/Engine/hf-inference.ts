@@ -37,20 +37,26 @@ class InferenceClient extends HfInference {
         "Qwen/Qwen3-Coder-480B-A35B-Instruct": "novita",
         "Qwen/Qwen3-Next-80B-A3B-Instruct": "novita",
         "Qwen/Qwen3-Next-80B-A3B-Thinking": "novita",
+        "Qwen/Qwen3-235B-A22B-Thinking-2507": "novita",
         "Qwen/Qwen3-235B-A22B-Instruct-2507": "novita",
         "Qwen/Qwen2.5-72B-Instruct": "hf-inference",
 
         "moonshotai/Kimi-K2-Instruct": "groq",
         "moonshotai/Kimi-K2-Instruct-0905": "novita",
+        "moonshotai/Kimi-K2-Thinking": "novita",
 
-        "CohereLabs/command-a-translate-08-2025": "cohere",
-
-        "google/gemma-3-27b-it": "hf-inference",
+        "zai-org/GLM-4.5-Air": "fireworks-ai",
         "zai-org/GLM-4.5": "fireworks-ai",
         "zai-org/GLM-4.6": "novita",
         "zai-org/GLM-4.7": "novita",
-        "shisa-ai/shisa-v2-llama3.3-70b": "featherless-ai",
+
+        "MiniMaxAI/MiniMax-M2.1": "novita",
+        "XiaomiMiMo/MiMo-V2-Flash": "novita",
+        "CohereLabs/command-a-translate-08-2025": "cohere",
+
+        "google/gemma-3-27b-it": "hf-inference",
         "meta-llama/Llama-3.3-70B-Instruct": "fireworks-ai",
+        "shisa-ai/shisa-v2-llama3.3-70b": "featherless-ai",
     }
     constructor(private apiKey: string) { 
         super(apiKey)
