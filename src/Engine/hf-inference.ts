@@ -35,6 +35,8 @@ class InferenceClient extends HfInference {
         "deepseek-ai/DeepSeek-V3.1-Terminus": "novita",
         "deepseek-ai/DeepSeek-V3.2-Exp": "novita",
         "deepseek-ai/DeepSeek-V3.2": "novita",
+        "deepseek-ai/DeepSeek-V4-Flash": "novita",
+        "deepseek-ai/DeepSeek-V4-Pro": "novita",
 
         "Qwen/Qwen2.5-72B-Instruct": "hf-inference",
         "Qwen/Qwen3-Coder-480B-A35B-Instruct": "novita",
@@ -48,6 +50,7 @@ class InferenceClient extends HfInference {
         "moonshotai/Kimi-K2-Instruct-0905": "novita",
         "moonshotai/Kimi-K2-Thinking": "novita",
         "moonshotai/Kimi-K2.5": "novita",
+        "moonshotai/Kimi-K2.6": "novita",
 
         "zai-org/GLM-4.5-Air": "fireworks-ai",
         "zai-org/GLM-4.5": "fireworks-ai",
