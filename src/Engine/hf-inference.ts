@@ -26,6 +26,7 @@ class InferenceClient extends HfInference {
         "MiniMaxAI/MiniMax-M2.1": "novita",
         "MiniMaxAI/MiniMax-M2.5": "novita",
         "MiniMaxAI/MiniMax-M2.7": "novita",
+        "MiniMaxAI/MiniMax-M3": "novita",
 
         "deepseek-ai/DeepSeek-R1": "fireworks-ai",
         "deepseek-ai/DeepSeek-R1-0528": "fireworks-ai",
@@ -37,6 +38,8 @@ class InferenceClient extends HfInference {
         "deepseek-ai/DeepSeek-V3.2": "novita",
         "deepseek-ai/DeepSeek-V4-Flash": "novita",
         "deepseek-ai/DeepSeek-V4-Pro": "novita",
+        "deepseek-ai/DeepSeek-V4-Flash-0731": "novita",
+        "deepseek-ai/DeepSeek-V4-Pro-0813": "novita",
 
         "Qwen/Qwen2.5-72B-Instruct": "hf-inference",
         "Qwen/Qwen3-Coder-480B-A35B-Instruct": "novita",
@@ -45,12 +48,14 @@ class InferenceClient extends HfInference {
         "Qwen/Qwen3-235B-A22B-Thinking-2507": "novita",
         "Qwen/Qwen3-235B-A22B-Instruct-2507": "novita",
         "Qwen/Qwen3.5-397B-A17B": "novita",
+        "Qwen/Qwen3.8-2.4T-A95B": "novita",
 
         "moonshotai/Kimi-K2-Instruct": "groq",
         "moonshotai/Kimi-K2-Instruct-0905": "novita",
         "moonshotai/Kimi-K2-Thinking": "novita",
         "moonshotai/Kimi-K2.5": "novita",
         "moonshotai/Kimi-K2.6": "novita",
+        "moonshotai/Kimi-K3": "novita",
 
         "zai-org/GLM-4.5-Air": "fireworks-ai",
         "zai-org/GLM-4.5": "fireworks-ai",
@@ -58,6 +63,7 @@ class InferenceClient extends HfInference {
         "zai-org/GLM-4.7": "novita",
         "zai-org/GLM-5": "novita",
         "zai-org/GLM-5.1": "novita",
+        "zai-org/GLM-5.2": "novita",
 
         "XiaomiMiMo/MiMo-V2-Flash": "novita",
         "CohereLabs/command-a-translate-08-2025": "cohere",
